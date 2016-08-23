@@ -1,0 +1,1298 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>主页</title>
+    <link href="base.css" rel="stylesheet" type="text/css">
+    <script src="./resources/jquery-2.2.3.min.js"></script>
+    <script src="./resources/jquery.validate.min.js"></script><!--验证插件-->
+    <script src="./resources/messages_zh.js"></script><!--验证插件的中文提示-->
+
+    <script>
+        /*****************************JS***********************************/
+        "use strict";
+        $(function(){
+            /*导航条*/
+
+            /*载入各演示div*/
+            var curWidth= "",curHeight="";
+            $("a").click(function(event) {
+                event.preventDefault();
+                var flag=false;
+                var $divName=$(this).attr("id").slice(0,-3);
+                $(".middleCenter>div").each(function(index,item){
+                    if (item.id!=$divName)
+                    {
+                        $(item).css("display","none");
+                    }
+                    else
+                    {
+                        $(item).css("display","flex");
+                        flag =true;
+                    }
+                });
+                //$("#leftMiddle").children('div').remove();
+
+                if (!flag)
+                {
+                    $("#"+$divName).css("display","flex");/*弹性盒*/
+                    $(".middleCenter").append($("#"+$divName));//第一次点击时
+                }
+            });
+
+            //advForm应用验证
+            var validator=$("#validateTopWidth").validate({
+                rules:{
+                    divWidth:{
+                        digits:true,
+                        min:0
+                    },
+                    divHeight:{
+                        digits:true,
+                        min:0
+                    }
+                },
+                messages:{
+                    divWidth:"请输入正整数",
+                    divHeight:"请输入正整数"
+                },
+                errorClass:"invalidInfo"
+
+            });
+            //应用高度和宽度
+            $("#layOutAdvTopWidthBtn").click(function(){
+                var dWidth=$("#showDivWidth").val();
+                var dHeight=$("#showDivHeight").val();
+                if (dHeight.indexOf("当前")>=0){
+                    $("#showDivHeight").val("");
+                    dHeight="";
+                }
+                if (dWidth.indexOf("当前")>=0){
+                    $("#showDivWidth").val("");
+                    dWidth="";
+                }
+                if(validator.form())//通过校验
+                {
+                    if($.trim(dWidth)!="" ){
+                        $(".showDiv").css("width",dWidth+"px");
+                    }
+                    if($.trim(dHeight)!=""){
+                        $(".showDiv").css("height",dHeight+"px");
+                    }
+                }
+                //修改curWidth和curHeight
+                curHeight=$(".showDiv").css("height");
+                curWidth=$(".showDiv").css("width");
+                setCruWidthHeight(curHeight,curWidth);
+                return false;//阻止提交anyway
+            });
+            /*几种布局*/
+            /*左右固定比例布局*/
+            $("#layOutAdvButtons input").click(function(event){
+                event.preventDefault();
+                $(".showDiv").remove();
+                //动态添加div
+                switch(this.id){
+                    case "2_scaled":
+                        var divName="d_2_scaled";
+                        var divNew = document.createElement('div');
+                        /*html元素方式设置css*/
+                        divNew.className="showDiv";
+                        divNew.class="showDiv";
+                        divNew.style.display="flex";
+                        divNew.style.height="70%";
+                        divNew.style.maxHeight="80%";
+                        divNew.id=divName;
+                        divNew.alignSelf="flex-end";/*设置自己在父容器中的cross轴对齐方向*/
+                        divNew.style.flexDirection="row";
+                        divNew.style.flexWrap = "nowrap";
+                        var divLeft=document.createElement('div');/*左div*/
+                        divLeft.style.backgroundColor="#B5E61D";
+                        divLeft.style.flexBasis="20%";
+                        divLeft.style.webkitFlexBasis="20%";
+                        divLeft.height="100%";
+                        divLeft.innerHTML="左";
+                        var divRight=document.createElement('div');/*右div*/
+                        divRight.style.flexBasis="80%";
+                        divRight.style.webkitFlexBasis="80%";
+                        divRight.height="100%";
+                        //divRight.flexBasis="200px";
+                        divRight.innerHTML="右";
+                        divRight.style.backgroundColor="#00A2E8";
+                        divNew.appendChild(divLeft);
+                        divNew.appendChild(divRight);
+                        $("#layOutAdv").append(divNew);
+                        break;
+                    case "2_leftFixed":
+                        var divName="2_leftFixed";
+                        var divNew = document.createElement('div');
+                        /*html元素方式设置css*/
+                        divNew.className="showDiv";
+                        divNew.class="showDiv";
+                        divNew.style.display="flex";
+                        divNew.style.height="70%";
+                        divNew.style.maxHeight="80%";
+                        divNew.id=divName;
+                        divNew.alignSelf="flex-end";/*设置自己在父容器中的cross轴对齐方向*/
+                        divNew.style.flexDirection="row";
+                        divNew.style.flexWrap = "nowrap";
+                        var divLeft=document.createElement('div');/*左div*/
+                        divLeft.style.backgroundColor="#B5E61D";
+                        divLeft.style.flexBasis="100px";
+                        divLeft.style.webkitFlexBasis="100px";
+                        divLeft.style.flexGrow="0";
+                        divLeft.style.webkitFlexGrow="0";
+                        divLeft.style.webkitFlexShrink="0";
+                        divLeft.style.flexShrink="0";
+                        divLeft.height="100%";
+                        divLeft.innerHTML="宽100px";
+                        var divRight=document.createElement('div');/*右div*/
+                        divRight.style.flexBasis="auto";
+                        divRight.style.webkitFlexBasis="auto";
+                        divRight.height="100%";
+                        divRight.style.backgroundColor="#00A2E8";
+                        divNew.appendChild(divLeft);
+                        divNew.appendChild(divRight);
+
+                        $("#layOutAdv").append(divNew);
+                        break;
+                    case "3_LMR":
+                        var divName="3_LMR";
+                        var divNew = document.createElement('div');
+                        /*html元素方式设置css*/
+                        divNew.className="showDiv";
+                        divNew.class="showDiv";
+                        divNew.style.display="flex";
+                        divNew.style.height="70%";
+                        divNew.style.maxHeight="80%";
+                        divNew.id=divName;
+                        divNew.alignSelf="flex-end";/*设置自己在父容器中的cross轴对齐方向*/
+                        divNew.style.flexDirection="row";
+                        divNew.style.flexWrap = "nowrap";
+                        var divLeft=document.createElement('div');/*左div*/
+                        divLeft.style.backgroundColor="#B5E61D";
+                        divLeft.style.flexBasis="100px";
+                        divLeft.style.webkitFlexBasis="100px";
+                        divLeft.style.flexGrow="0";
+                        divLeft.style.webkitFlexGrow="0";
+                        divLeft.style.webkitFlexShrink="0";
+                        divLeft.style.flexShrink="0";
+                        divLeft.height="100%";
+                        divLeft.innerHTML="宽100px";
+                        var divCenter=document.createElement('div');/*中div*/
+                        divCenter.style.flexBasis="auto";
+                        divCenter.style.webkitFlexBasis="auto";
+                        divCenter.height="100%";
+                        divCenter.style.backgroundColor="#00A2E8";
+
+                        var divRight=document.createElement('div');/*右div*/
+                        divRight.style.backgroundColor="#B5E61D";
+                        divRight.style.flexBasis="100px";
+                        divRight.style.webkitFlexBasis="100px";
+                        divRight.style.flexGrow="0";
+                        divRight.style.webkitFlexGrow="0";
+                        divRight.style.webkitFlexShrink="0";
+                        divRight.style.flexShrink="0";
+                        divRight.height="100%";
+                        divRight.innerHTML="宽100px";
+                        divNew.appendChild(divLeft);
+                        divNew.appendChild(divCenter);
+                        divNew.appendChild(divRight);
+
+                        $("#layOutAdv").append(divNew);
+                        break;
+                    case "3_TMB":
+                        var divName="3_LMR";
+                        var divNew = document.createElement('div');
+                        /*html元素方式设置css*/
+                        divNew.className="showDiv";
+                        divNew.class="showDiv";
+                        divNew.style.display="flex";
+                        divNew.style.top="0";
+                        divNew.style.height="70%";
+                        divNew.style.maxHeight="80%";
+                        divNew.id=divName;
+                        divNew.alignSelf="flex-end";/*设置自己在父容器中的cross轴对齐方向*/
+                        divNew.style.flexDirection="column";
+                        divNew.style.flexWrap = "nowrap";
+                        var divTop=document.createElement('div');/*上div*/
+                        divTop.style.backgroundColor="#F5E61D";
+                        divTop.style.flexBasis="50px";
+                        divTop.style.webkitFlexBasis="50px";
+                        divTop.style.flexGrow="0";
+                        divTop.style.webkitFlexGrow="0";
+                        divTop.style.webkitFlexShrink="0";
+                        divTop.style.flexShrink="0";
+                        divTop.width="100%";
+                        divTop.innerHTML="高50px";
+                        var divCenterMain=document.createElement('div');/*中mainDiv*/
+                        divCenterMain.style.display="flex";
+                        divCenterMain.style.width="100%";
+                        divCenterMain.style.flexBasis="500px";
+                        divCenterMain.style.overflow="hidden";
+                        var divLeft=document.createElement('div');//左div
+                        divLeft.style.backgroundColor="#B5E61D";
+                        divLeft.style.flexBasis="100px";
+                        divLeft.style.webkitFlexBasis="100px";
+                        divLeft.style.flexGrow="0";
+                        divLeft.style.webkitFlexGrow="0";
+                        divLeft.style.webkitFlexShrink="0";
+                        divLeft.style.flexShrink="0";
+                        //divLeft.height="70%";
+                        divLeft.innerHTML="宽100px";
+                        var divCenter=document.createElement('div');//中div
+                        divCenter.style.flexBasis="auto";
+                        divCenter.style.webkitFlexBasis="auto";
+                        //divCenter.height="70%";
+                        divCenter.style.backgroundColor="#00A2E8";
+
+                        var divRight=document.createElement('div');//右div
+                        divRight.style.backgroundColor="#B5E61D";
+                        divRight.style.flexBasis="100px";
+                        divRight.style.webkitFlexBasis="100px";
+                        divRight.style.flexGrow="0";
+                        divRight.style.webkitFlexGrow="0";
+                        divRight.style.webkitFlexShrink="0";
+                        divRight.style.flexShrink="0";
+                        //divRight.height="70%";
+                        divRight.innerHTML="宽100px";
+
+
+                            //divCenterMain.style.backgroundColor="red";
+                        var divBottom=document.createElement('div');/*下div*/
+                        divBottom.style.backgroundColor="#F5E61D";
+                        divBottom.style.flexBasis="50px";
+                        divBottom.style.webkitFlexBasis="50px";
+                        divBottom.style.flexGrow="0";
+                        divBottom.style.webkitFlexGrow="0";
+                        divBottom.style.webkitFlexShrink="0";
+                        divBottom.style.flexShrink="0";
+                        divBottom.width="100%";
+                        divBottom.innerHTML="高50px";
+
+                        divCenterMain.appendChild(divLeft);
+                        divCenterMain.appendChild(divCenter);
+                        divCenterMain.appendChild(divRight);
+                        divNew.appendChild(divTop);
+                        divNew.appendChild(divCenterMain);
+                        divNew.appendChild(divBottom);
+                        $("#layOutAdv").append(divNew);
+                        break;
+                }
+                curHeight=$(".showDiv").css("height");
+                curWidth=$(".showDiv").css("width");
+                setCruWidthHeight(curHeight,curWidth);
+            });
+            //显示当前宽度和高度
+            var setCruWidthHeight=function(dHeight,dWidth){
+                $("#showDivWidth").val("当前:"+curWidth);
+                $("#showDivHeight").val("当前:"+curHeight);
+            };
+            $("#showDivWidth").focus(function(){
+                var showDivWidth=$(this).val();
+                if (showDivWidth=="当前:"+curWidth){
+                    $("#showDivWidth").val("");
+                }
+            });
+            $("#showDivHeight").focus(function(){
+                var showDivHeight=$(this).val();
+                if (showDivHeight=="当前:"+curHeight){
+                    $("#showDivHeight").val("");
+                }
+            });
+            //图片轮播
+
+            var currentDot=0;
+            var baseLeft=450;
+
+            funShow();
+            $(document).on("mouseenter",".dots li",function(e){
+                clearInterval(iTimer);
+                var tarId = $(this).attr("id");
+                if (tarId != currentDot) {
+                    moveToCurrent(tarId);
+                    currentDot = tarId;
+                }
+                iTimer=setInterval(funShow,2000);
+            });
+
+            var iTimer=setInterval(funShow,2000);
+
+            function funShow(){
+                (currentDot=="4") ? moveToCurrent(1) : moveToCurrent(parseInt(currentDot)+1);
+            }
+            function moveToCurrent(cid){
+                var val=("-"+(cid-1))*baseLeft;
+                currentDot=cid;
+                //更换dot小图标
+                $("#img"+cid).attr("src","resources/img/dot"+cid+"N.fw.png");
+                $(".dots img:not([id='img"+cid+"'])").each(function(){
+                    if ($(this).attr("src").indexOf("N.fw.png"))
+                    {
+                        $(this).attr("src",$(this).attr("src").replace("N.fw.png","F.fw.png"));
+                    }
+                })
+                $(".imgs").stop();
+                $(".imgs").animate({left:val+'px'},"700");
+            }
+
+            //transformShow
+
+            var pOri=['center','center'],transOptions,fTranslateY,fRotateDeg,fScaleX,fScaleY,fSkewX,fSkewY;//初始原点,转换条件
+            var fTranslateX= 0,fTranslateY=0,fRotateDeg=0,fScaleX=0,fScaleY=0,fSkewX=0,fSkewY= 0;
+            var fTranslateXSpace,fTranslateYSpace,fRotateSpace,fScaleXSpace,fScaleYSpace,fSkewXSpace,fSkewYSpace;
+            var vOriX,vOriY,vTranslateX,vTranslateY,vRotateDeg,vScaleX,vScaleY,vSkewX,vSkewY,vMatrix;
+            var sCount=0;
+            fScaleX=1;
+            fScaleY=1;
+            $("#applyTransform").click(function(){
+                $("#ImgDiv").stop(true, true);
+                sCount++;
+                vOriX= $.trim($("#ori-x").val()); //设定原点x坐标
+                vOriY=$.trim($("#ori-y").val());//设定原点y坐标
+                vTranslateX=$.trim($("#translateX").val());//设定位移x坐标
+                vTranslateY=$.trim($("#translateY").val());//设定位移y坐标
+                vRotateDeg=$.trim($("#rotateDeg").val());//设定旋转角度
+                vScaleX=$.trim($("#scaleX").val());//设定x轴伸缩倍数
+                vScaleY=$.trim($("#scaleY").val());//设定y轴伸缩倍数
+                vSkewX=$.trim($("#skewX").val());//设定x轴翻转角度
+                vSkewY=$.trim($("#skewY").val());//设定y轴翻转角度
+                makeTransform();
+            });
+
+            function makeTransform(){
+
+                var imgDiv=$("#ImgDiv")[0];
+                transOptions="";
+                pOri=imgDiv.style.transformOrigin.split(" ");
+                imgDiv.style.transformOrigin=pOri[0]+" "+pOri[1];//设定变换中心
+                var strOption,applyTransform,duration,continueFlag,sOption;
+                continueFlag=$("#continuFlag").attr("checked");
+
+                duration =$.trim($("#duration").val())==""? 2000:String(parseInt(duration)*1000);//默认值2s
+
+                applyTransform=function($e,strOption){
+                    $e.css({'transform':strOption,'-moz-transform':strOption,'-webkit-transform':strOption,'-ms-transform':strOption});
+                };
+
+                    $("#ImgDiv").animate({ textIdent: 0 }, {duration:duration,
+                    step: function(now,fx) {
+                        //applyTransform($(this),strV);
+                        fx.start=1;
+                        fx.end=duration;
+                        //translateX
+                        if (sCount==2){
+                            showMsg(fTranslateX+","+fTranslateY);
+                        }
+                        sOption="";
+                        if (vTranslateX!=""){
+                            fTranslateXSpace=parseFloat(((now/duration)*(vTranslateX)).toFixed(3));
+                            sOption=" translateX("+String(fTranslateX+fTranslateXSpace)+"px)";
+                        }
+                        else if (fTranslateX!=0){
+                            sOption=" translateX("+String(fTranslateX)+"px)";
+                        }
+                        //translateY
+                        if (vTranslateY!=""){
+                            fTranslateYSpace=parseFloat(((now/duration)*(vTranslateY)).toFixed(3));
+                            sOption+=" translateY("+String(fTranslateY+fTranslateYSpace)+"px)";
+                        }
+                        else if (fTranslateY!=0){
+                            sOption+=" translateY("+String(fTranslateY)+"px)";
+                        }
+                        //rotateDeg
+                        if (vRotateDeg!=""){
+                            fRotateSpace=parseFloat(((now/duration)*(vRotateDeg)).toFixed(3));
+                            sOption+=" rotate("+String(fRotateDeg+fRotateSpace)+"deg)";
+                        }
+                        else if (fTranslateY!=0){
+                            sOption+=" rotate("+String(fRotateDeg)+"deg)";
+                        }
+                        //ScaleX
+                        if (vScaleX!=""){
+                            fScaleXSpace=parseFloat(((now/duration)*(vScaleX-1)).toFixed(3));
+                            sOption+=" scaleX("+String(fScaleX+fScaleXSpace)+")";
+                        }
+                        else if (fScaleX!=0){
+                            sOption+=" scaleX("+String(fScaleX)+")";
+                        }
+                        //ScaleY
+                        if (vScaleY!=""){
+                            fScaleYSpace=parseFloat(((now/duration)*(vScaleY-1)).toFixed(3));
+                            sOption+=" scaleY("+String(fScaleY+fScaleYSpace)+")";
+                        }
+                        else if (fScaleY!=0){
+                            sOption+=" scaleY("+String(fScaleY)+")";
+                        }
+                        //skewX
+                        if (vSkewX!=""){
+                            fSkewXSpace=parseFloat(((now/duration)*(vSkewX)).toFixed(3));
+                            sOption+=" skewX("+String(fSkewX+fSkewXSpace)+"deg)";
+                        }
+                        else if (fSkewX!=0){
+                            sOption+=" skewX("+String(fSkewX)+"deg)";
+                        }
+                        //skewY
+                        if (vSkewY!=""){
+                            fSkewYSpace=parseFloat(((now/duration)*(vSkewY)).toFixed(3));
+                            sOption+=" skewY("+String(fSkewY+fSkewYSpace)+"deg)";
+                        }
+                        else if (fSkewY!=0){
+                            sOption+=" skewY("+String(fSkewY)+"deg)";
+                        }
+                        if (sOption!="" && now!=duration){
+                            sOption.substring(1,sOption.length-1);
+                            showMsg("now"+String(now)+"++"+sOption);
+                            applyTransform($(this),sOption);
+                        }
+                    },
+                    complete:function(){
+                        fTranslateX=vTranslateX!=""?fTranslateX+parseFloat(vTranslateX):fTranslateX;
+                        fTranslateY=vTranslateY!=""?fTranslateY+parseFloat(vTranslateY):fTranslateY;
+                        fRotateDeg=vRotateDeg!=""?fRotateDeg+parseFloat(vRotateDeg):fRotateDeg;
+                        fScaleX=vScaleX!=""?fScaleX+parseFloat(vScaleX-1):fScaleX;
+                        fScaleY=vScaleY!=""?fScaleY+parseFloat(vScaleY-1):fScaleY;
+                        fSkewX=vSkewX!=""?fSkewX+parseFloat(vSkewX):fSkewX;
+                        fSkewY=vSkewY!=""?fSkewY+parseFloat(vSkewY):fSkewY;
+                        sOption="";
+                        showMsg("complete:"+fScaleX+","+fScaleY);
+                    }},'linear');
+            }
+
+            function showMsg(strMsg){
+                $("#matrixInfo").html(strMsg);
+                console.log(String(sCount)+":"+strMsg+"--"+ $.now());
+            }
+
+            //图片显示
+            $(".imgsClickDiv img:last").load(function(){
+                $(".imgsClickDiv  img:eq(2)").parent().siblings().find("img").addClass("grayImg");
+            });
+            $(".imgsClickDiv img").hover(function(){
+                $(this).parent().siblings().find("img").addClass("grayImg");
+                $(this).removeClass("grayImg");
+                var indx=$(this).parent().css("z-Index");
+                $(this).parent().css("z-Index","9"+indx);
+                //$(this).parent().addClass("bigDiv");
+            },function(){
+                //$(this).parent().removeClass("bigDiv");
+                $(this).addClass("grayImg");
+                var indx=$(this).parent().css("z-Index");
+                $(this).parent().css("z-Index",indx.substr(1,1));
+                if ($(".grayImg").size()==5){
+                    $(".imgsClickDiv  img:eq(2)").removeClass("grayImg");//保持至少有一个高亮图片
+                }
+            });
+        })
+
+    </script>
+
+    <style>
+        /****************************css设置***********************************/
+        /*base设置请见base.css*/
+
+        /*主页面布局*/
+        .middleLeft{
+            flex-basis:120px;
+            flex-shrink: 0;
+        }
+        .middleCenter{
+            height:inherit;
+            flex-basis:auto;
+
+        }
+        .middleRight{
+            flex-basis:120px;
+            flex-shrink: 0;
+        }
+        /*topMenu设置*/
+
+        #topNav{
+            position:relative;
+            top:70px;
+        }
+        #topNav *{
+            color:#ffffff;
+        }
+        #topNav ul{
+            width:100px;
+            postion:absolute;
+        }
+        .topMenu{
+            float: right;
+            list-style-type: none;
+        }
+        #topNav a{
+                font-family: "klxy";
+
+                padding:0px 2em;
+                line-height:25px;
+            }
+        #topNav li:hover>a{
+            background-color: #c6c6c6;
+            -moz-border-radius: 8px;
+            -webkit-border-radius: 8px;
+            border-radius:8px;
+        }
+
+        /*左侧导航栏设置*/
+        #leftNav a,#leftNav span {
+            /*菜单设置 */
+            font-family: 方正兰亭超细黑简体,微软雅黑;
+            font-weight: bolder;
+            color: #777777;
+            display: block;
+            text-align:center;
+        }
+
+        #leftNav li{
+             /*主菜单，设置上下边距*/
+            background: #efefef;
+            background: linear-gradient(top, #efefef 0%, #bbbbbb 100%);
+            background: -moz-linear-gradient(top, #efefef 0%, #bbbbbb 100%);
+            background: -webkit-linear-gradient(top, #efefef 0%,#bbbbbb 100%);
+            position:relative;
+            width:120px;
+             border-bottom: 1px solid #dddddd;
+            -padding: 5px 0 5px 0;
+            border-radius: 3px;
+            display:block;
+         }
+        #leftNav li>a{
+            /*主菜单，设置上下边距*/
+            -padding:25px 40px;
+            border-radius: 3px;
+            display: block;
+
+        }
+        #leftNav li:last-child{
+            border-bottom: none;
+        }
+
+        #leftNav ul{
+            background: #efefef;
+            background: linear-gradient(top, #efefef 0%, #bbbbbb 100%);
+            background: -moz-linear-gradient(top, #efefef 0%, #bbbbbb 100%);
+            background: -webkit-linear-gradient(top, #efefef 0%,#bbbbbb 100%);
+            box-shadow: 0px 0px 9px rgba(0,0,0,0.15);
+            -padding: 0 20px;
+
+            list-style: none;
+            position: absolute;
+            display: none;
+        }
+        nav ul:after {
+            content: "";
+            clear: both;
+            display: block;
+        }
+
+        #leftNav li:hover>a{
+            color:#ffffff;
+            background: #4b545f;
+            background: linear-gradient(top, #4f5964 0%, #5f6975 40%);
+            background: -moz-linear-gradient(top, #4f5964 0%, #5f6975 40%);
+            background: -webkit-linear-gradient(top, #4f5964 0%,#5f6975 40%);
+        }
+        #leftNav li:hover>ul{
+            display:block;
+            -webkit-animation: moveFromRight 300ms ease-in-out;
+            -moz-animation: moveFromRight 300ms ease-in-out;
+            -ms-animation: moveFromRight 300ms ease-in-out;
+            -o-animation: moveFromRight 300ms ease-in-out;
+            animation: moveFromRight 300ms ease-in-out;
+            left:120px;
+            top:0;
+        }
+        @-webkit-keyframes moveFromRight {
+            from {
+                opacity: 0;
+                -webkit-transform: translateX(100%);
+                -moz-transform: translateX(100%);
+                -ms-transform: translateX(100%);
+                -o-transform: translateX(100%);
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                -webkit-transform: translateX(0%);
+                -moz-transform: translateX(0%);
+                -ms-transform: translateX(0%);
+                -o-transform: translateX(0%);
+                transform: translateX(0%);
+            }
+        }
+
+
+
+        /*--分类演示div--*/
+        /*--版本信息--*/
+        #readme h1 {
+            color: #256490;
+        }
+        #readme p{
+            font-family: "Arial","Microsoft YaHei","黑体","宋体",sans-serif;
+            background-color:#256490;
+            color:#ffffff;
+            margin-top:3px;
+        }
+        /*--自我介绍--*/
+        #myProfile img{
+            width:240px;
+            height:280px;
+            float:right;
+        }
+        #myProfile p{
+             font-family: "Arial","Microsoft YaHei","黑体","宋体",sans-serif;
+             font-size:16px;
+             margin-top:3px;
+         }
+        #myProfile span {
+            font-size: 18px;
+            background-color: #256490;
+            color: #ffffff;
+        }
+        /*--获奖信息--*/
+        #rewardInfo img{
+            width:400px;
+            height:300px;
+        }
+        /*--学习计划--*/
+        #learningPlan h1{
+            color:#256490;
+        }
+        #learningPlan p{
+            font-family: "Arial","Microsoft YaHei","黑体","宋体",sans-serif;
+            background-color:#256490;
+            color:#ffffff;
+            margin-top:3px;
+        }
+        /*--布局div,basic--*/
+        #layOutBasic{
+            display: none;
+            background-size:100px 100px;
+
+            background-image: url(resources/img/CSS-BOX-MODEL.jpg);
+            background-repeat:no-repeat;
+            background-size:100%;
+        }
+
+        #layOutBasic{
+            float:left;
+            width:400px;
+            height: 400px;
+        }
+        /*几种布局*/
+        #layOutAdv{
+            display:none;
+            flex-direction:row;
+            flex-wrap: wrap;
+            justify-content:flex-start;
+            height:100%;
+            width:100%;
+        }
+        #layOutAdv input[type=button]{
+            margin:4px;
+            width:135px;
+            height:20px;
+            background-color: #87cefa;
+            color:#ffffff;
+            border-radius:2px;
+        }
+        .layOutAdvInputs input[type=button]:hover{
+            background-color: #87eefa;
+            color:#ffffff;
+        }
+        .layOutAdvInputs {
+            height:60px;
+        }
+        #layOutAdv label{
+            margin:5px;
+            display:inline-block;
+            width:120px;
+            color:#ffffff;
+            background-color:#4b545f;
+            text-align: center;
+            border-radius: 2px;
+        }
+        #layOutAdv input[type=text]{
+             display: inline-block;
+             width:80px;
+             height:20px;
+             border: 1px solid #87cefa;
+             border-radius: 2px;
+         }
+        #layOutAdv input[type=submit]{
+            display: inline-block;
+            width:40px;
+            height:20px;
+            border-radius: 2px;
+            color:#ffffff;
+            background-color: #D67E22;
+        }
+        #layOutAdvButtons{
+            width:100%;
+            height:30px;
+        }
+        #layOutAdvTopWidth{
+            width:100%;
+            height:30px;
+        }
+
+        .invalidInfo{
+            color:#ff0000;
+            background-color: #bbbbbb;
+        }
+        #imgsLoopShow{
+            display:none;
+            width:100%;
+            height:100%;
+            /*--居中--*/
+            justify-content: center;
+            align-items: center;
+        }
+        #imgsLoopDiv{
+            height:300px;
+            width:300px;
+            overflow: hidden;
+            position:relative;
+
+        }
+        #imgsLoopDiv li{
+            float:left
+        }
+
+        .imgs{
+            position:absolute;
+            left:0;
+            top:0;
+            width:1800px;
+            height:300px;
+
+        }
+        .imgs img{
+            height: 300px;
+            width:450px;
+        }
+
+        .dots{
+            width:150px;
+            height:10px;
+            position:absolute;
+            top:260px;
+            left:150px;
+            z-index:10;
+        }
+        .dots img{
+            height:100%;
+            width:100%;
+        }
+        .dots li{
+            float:left;
+        }
+        /*--transform--*/
+        #transformShow{
+            display:none;
+            align-items: center;
+        }
+        #ImgDiv{
+            width:200px;
+            height:200px;
+        }
+        #ImgDiv img{
+            width:100%;
+            height:100%;
+        }
+
+        /*transformShow*/
+        #ImgControlDiv{
+            left:0;
+            width:50%;
+            height: 80%;
+            border:1px solid red;
+        }
+
+        #ImgDiv{
+            border:1px solid blue;
+        }
+        #transformShow label{
+            margin:5px;
+            display:inline-block;
+            width:200px;
+            color:#ffffff;
+            background-color:#4b545f;
+            text-align: center;
+            border-radius: 2px;
+        }
+        #transformShow input[type=text]{
+            display: inline-block;
+            width:40px;
+            height:20px;
+            border: 1px solid #87cefa;
+            border-radius: 2px;
+        }
+        #transformShow input[type=submit]{
+            display: inline-block;
+            width:40px;
+            height:20px;
+            border-radius: 2px;
+            color:#ffffff;
+            background-color: #D67E22;
+        }
+        .transformShow input[type=button]:hover{
+            background-color: #87eefa;
+            color:#ffffff;
+        }
+        /*骰子布局*/
+
+        #layOutFlexBox{
+            display:none;
+        }
+
+        #flexBoxDice{
+            width:250px;
+            height:250px;
+            display:flex;
+            display:-webkit-flex;
+            flex-wrap:wrap;
+            -webkit-flex-wrap: wrap;
+        }
+        #flexBoxDice>div{
+            width:80px;
+            height:80px;
+            display:flex;
+            background-image: url(resources/img/diceBase.gif);
+            background-repeat: no-repeat;
+        }
+
+        .diceDot{
+            margin:4px;
+            width:20px;
+            height:20px;
+            background-image: url("resources/img/diceDot.gif");
+            background-size:100%;
+            background-repeat: no-repeat;
+            background-position:center;
+        }
+        /*骰子1*/
+        #diceDiv1{
+            align-items: center;
+            justify-content:center;
+        }
+        /*骰子2*/
+        #diceDiv2{
+            align-content: space-between;
+            justify-content:space-between;
+
+        }
+        #diceDiv2 .diceDot:nth-child(2){
+            align-self: flex-end;
+        }
+        /*骰子3*/
+        #diceDiv3{
+            justify-content: space-between;
+        }
+        #diceDiv3 .diceDot:nth-child(2) {
+            align-self: center;
+        }
+        #diceDiv3 .diceDot:nth-child(3){
+            align-self:flex-end;
+        }
+        /*骰子4*/
+        #diceDiv4{
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        /*dot图片高宽*/
+        .diceDiv4Top{
+            height:28px;
+            display:flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+        .diceDiv4Bottom{
+            height:28px;
+            display:flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+        /*骰子5*/
+        #diceDiv5{
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .diceDiv5Top{
+            height:28px;
+            display:flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+        .diceDiv5Middle{
+            height:28px;
+            display:flex;
+            flex-direction: row;
+            justify-content: center;
+        }
+        .diceDiv5Bottom{
+            height:28px;
+            display:flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+        /*骰子6*/
+        #diceDiv6{
+            flex-direction: row;
+            justify-content: space-between;
+        }
+        .diceDiv6Left{
+            width:28px;
+            display:flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .diceDiv6Right{
+            width:28px;
+            display:flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        /*图片点击*/
+        #imgsClickControl{
+            display:none;
+            width:800px;
+            height:400px;
+            justify-content: center;
+            align-items: center;
+        }
+        .imgsClickDiv{
+            width:600px;
+            height:200px;
+            position:relative;
+        }
+        .imgsClickDiv img{
+            width: 100%;
+            height:100%;
+        }
+        .imgsClick{
+            position:absolute;
+            width:200px;
+            height:200px;
+        }
+        #imgsClick1{
+            top:60px;
+            left:0;
+            z-index: 1;
+            transform: rotate(-20deg);
+        }
+        #imgsClick2{
+            left:80px;
+            top:30px;
+            z-index: 3;
+            transform: rotate(-10deg);
+        }
+        #imgsClick3{
+            top:20px;
+            left:160px;
+            z-index: 5;
+        }
+        #imgsClick4{
+            top:30px;
+            left:240px;
+            z-index: 2;
+            transform: rotate(10deg);
+        }
+        #imgsClick5{
+            top:60px;
+            left:320px;
+            z-index: 0;
+            transform: rotate(20deg);
+        }
+
+        .grayImg{
+            -webkit-filter: grayscale(100%);
+            -moz-filter: grayscale(100%);
+            -o-filter: grayscale(100%);
+            filter: grayscale(100%);
+        }
+        .bigDiv{
+            height:110%;
+            width:110%;
+        }
+    </style>
+</head>
+<body>
+<div id="wrapper">
+    <header>
+        <nav>
+            <ul id="topNav">
+                    <li  class="topMenu"><a id="learningPlanDIV" href=""> 学习计划</a></li>
+                    <li  class="topMenu"><a id="rewardInfoDIV" href="">获奖信息</a><span>|</span></li>
+                    <li  class="topMenu"><a id="myProfileDIV" href=""> 自我介绍</a><span>|</span></li>
+                    <li class="topMenu"><a id="readmeDIV"  href="">版本信息</a><span>|</span></li>
+            </ul>
+        </nav>
+    </header>
+    <main class="main">
+        <!--功能演示-->
+        <div class="codes">
+            <div class="middleLeft">
+                <!--功能导航栏，竖栏-->
+                <nav>
+                    <ul id="leftNav">
+                        <li class="leftMenu"><a href=""><strong>布  局</strong></a>
+                            <ul>
+                                <li class="leftSub1"><a id="layOutBasicDIV" href="">盒子模型</a></li>
+                                <li class="leftSub1"><a id="layOutAdvDiv"href="">float布局</a></li>
+                                <li class="leftSub1"><a id="layOutFlexBoxDIV" href="">flexbox骰子</a></li>
+                            </ul>
+                        </li>
+                        <li class="leftMenu"><a href=""><strong>菜  单</strong></a>
+                            <ul>
+                                <li class="leftSub1"><a href="">1级菜单2-1</a>
+                                    <ul>
+                                        <li class="leftSub2"><a href="">2级菜单2-1-1</a></li>
+                                        <li class="leftSub2"><a href="">2级菜单2-1-2</a></li>
+                                        <li class="leftSub2"><a href="">2级菜单2-1-3</a></li>
+                                    </ul>
+                                </li>
+                                <li class="leftSub1"><a href="">1级菜单2-2</a>
+                                    <ul>
+                                        <li class="leftSub2"><a href="">2级菜单2-2-1</a></li>
+                                        <li class="leftSub2"><a href="">2级菜单2-2-2</a></li>
+                                        <li class="leftSub2"><a href="">2级菜单2-2-3</a></li>
+                                    </ul>
+                                </li>
+                                <li class="leftSub1"><a href="">1级菜单2-3</a>
+                                    <ul>
+                                        <li class="leftSub2"><a href="">2级菜单2-3-1</a></li>
+                                        <li class="leftSub2"><a href="">2级菜单2-3-2</a></li>
+                                        <li class="leftSub2"><a href="">2级菜单2-3-3</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="leftMenu"><a href=""><strong>图  片</strong></a>
+                            <ul>
+                                <li class="leftSub1"><a  id="imgsLoopShowDiv" href="">图片轮播</a></li>
+                                <li class="leftSub1"><a id="transformShowDiv" href="">图像变换</a></li>
+                                <li class="leftSub1"><a id="imgsClickControlDiv" href="">图片书签</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="middleCenter">
+
+            </div>
+            <div class="middleRight">
+
+            </div>
+        </div>
+        <!--导航栏div-->
+        <!--版本信息-->
+        <div id="readme">
+            <div class="content">
+                <h1>版本信息</h1><br/>
+                <p>版 本 号 -------1.0</p>
+                <p>完成模块-------主页</p><br/>
+                <p>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp-------导航页</p>
+                <p>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp-------多级菜单</p>
+                <p>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp-------float布局</p>
+                <p>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp-------flexbox布局</p>
+                <p>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp-------图片轮播</p>
+                <p>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp-------图片变换</p>
+                <p>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp-------图片书签</p>
+                <p>开发工具-------WebStorm</p>
+                <p>测试环境-------WIN7+IE11、chrome</p>
+            </div>
+        </div>
+        <!--自我介绍-->
+        <div id="myProfile">
+            <div class="myInfo">
+                <img src="resources/img/myPhoto.jpg" alt="">
+                <p class="baseInfo"><span>姓名</span>:王法瑜</p>
+                <p class="baseInfo"><span>学历</span>:本科</p>
+                <p class="baseInfo"><span>工作经验</span>:超过10年的工作经验，多年C#开发经验，之前的工作是为钢铁系统开发信息管理软件，从需求分析到现场调试，从谈判交流到项目管控，一步一个脚印坚实进步。</p>
+                <p class="baseInfo"><span>为什么想从事互联网开发</span>:自己开发的软件使用总人数不超过500人，想让全世界的人都能使用自己开发的产品！</p>
+                <p class="baseInfo"><span>个人评价</span>:热爱工作，注重学习总结，内心有澎湃动力，每天进步！</p>
+                <p class="baseInfo"><span>学习前端开发时间</span>:3个月</p>
+                <p class="baseInfo"><span>已学习内容</span>:Linux（CentOS），mySql、Php、HTML5、CSS3、JavaScript、jQuery</p>
+                <p class="baseInfo"><span>工作期望</span>:希望进入优秀的团队共同工作，对于收入的期望不高，毕竟没有什么实际开发的经验，提升自己的能力更重要！</p>
+                <p class="baseInfo"><span>其他</span>:心地善良，热爱生命，热爱运动,刚开始使用Github！</p>
+                <p class="baseInfo"><span>联系方式</span>:tel(微信):13871193956/shihun123@vip.sina.com</p>
+            </div>
+        </div>
+        <!--获奖信息-->
+        <div id="rewardInfo">
+            <img src="resources/img/reward.jpg" alt="">
+        </div>
+        <!--学习计划-->
+        <div id="learningPlan">
+            <div class="content">
+                <h1>学习计划</h1><br/>
+                <p>flex布局</p>
+                <p>层叠，z-index</p>
+                <p>ES6</p>
+                <p>Ajax</p>
+                <p>Seo</p>
+            </div>
+        </div>
+        <!--分类演示div-->
+        <!--布局div,basic-->
+        <div id="layOutBasic">
+
+        </div>
+        <div id="layOutAdv">
+            <div class="layOutAdvInputs">
+                <div id="layOutAdvButtons">
+                    <input id="2_scaled" type="button" value="左右2栏固定比例"/>
+                    <input id="2_leftFixed" type="button" value="左右2栏左固定"/>
+                    <input id="3_LMR"  type="button" value="左中右3栏中固定"/>
+                    <input id="3_TMB" type="button" value="上中下3行"/>
+                </div>
+                <form action="" id="validateTopWidth">
+                    <div id="layOutAdvTopWidth">
+                        <label for ="showDivWidth">演示区宽(px)</label>
+                        <input type="text" id="showDivWidth" name="divWidth" />
+                        <label for ="showDivHeight">演示区高(px)</label>
+                        <input type="text" id="showDivHeight" name="divHeight"/>
+                        <input id="layOutAdvTopWidthBtn" type="submit" value="应用"/>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="imgsLoopShow">
+
+            <div id="imgsLoopDiv">
+                <div class="imgs">
+                    <!--//图片展示-->
+                    <ul>
+                        <li><a href="#"><img src="resources/img/loop1.jpg" /></a></li>
+                        <li><a href="#"><img src="resources/img/loop2.jpg" /></a></li>
+                        <li><a href="#"><img src="resources/img/loop3.jpg" /></a></li>
+                        <li><a href="#"><img src="resources/img/loop4.jpg" /></a></li>
+                    </ul>
+                </div>
+                <div class="dots">
+                    <ul>
+                        <li id="1"><img id="img1"  src="resources/img/dot1F.fw.png" /></li>
+                        <li id="2"><img id="img2"  src="resources/img/dot2F.fw.png"/></li>
+                        <li id="3"><img id="img3"  src="resources/img/dot3F.fw.png"/></li>
+                        <li id="4"><img id="img4"  src="resources/img/dot4F.fw.png"/></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div id="transformShow">
+            <div id="ImgControlDiv">
+                <fieldset>
+                    <label for="ori-x" value="当前坐标x,y">当前坐标x,y</label>
+                    <input id ="ori-x" type="text" value=""/>,<input id ="ori-y" type="text"/> </br>
+                    <label for="translateX" value="移动至新坐标x,y">移动至新坐标x,y</label>
+                    <input id ="translateX" type="text"/>,<input id ="translateY" type="text" /></br>
+                    <label for="rotateDeg" value="旋转角度-360~360">旋转角度-360~360</label>
+                    <input id="rotateDeg"  type="text"/></br>
+                    <label for="scaleX" value="伸缩:x轴倍数，y轴倍数">伸缩:x轴倍数，y轴倍数"</label>
+                    <input id="scaleX"  type="text" />,<input id ="scaleY" type="text" /></br>
+                    <label for="skewX" value="翻转：x轴角度，y轴角度">翻转：x轴角度，y轴角度</label>
+                    <input id="skewX"  type="text" />,<input id ="skewY" type="text" /></br>
+
+                    <label id="matrixInfo" value="matrix数据：">matrix数据：</label></br>
+                    <label for="duration" value="持续时间">持续时间(s)</label>
+                    <input id="duration"  type="text" /></br>
+                    <label >持续变化</label>
+                    <input id="continuFlag" type="checkbox"/>&nbsp&nbsp&nbsp
+                    <input id="applyTransform" type="button" value="应用"/>
+                </fieldset>
+            </div>
+            <div id="ImgDiv">
+                <img id="tansformImg" src="resources/img/transformShow.jpg"/>
+            </div>
+        </div>
+        <div id="layOutFlexBox">
+            <div id="flexBoxDice">
+                <div id="diceDiv1">
+                    <div class="diceDot"> </div>
+                </div>
+                <div id="diceDiv2">
+                    <div class="diceDot"> </div>
+                    <div class="diceDot"> </div>
+                </div>
+                <div id="diceDiv3">
+                    <div class="diceDot"> </div>
+                    <div class="diceDot"> </div>
+                    <div class="diceDot"> </div>
+                </div>
+                <div id="diceDiv4">
+                    <div class="diceDiv4Top">
+                        <div class="diceDot"> </div>
+                        <div class="diceDot"> </div>
+                    </div>
+                    <div class="diceDiv4Bottom">
+                        <div class="diceDot"> </div>
+                        <div class="diceDot"> </div>
+                    </div>
+                </div>
+                <div id="diceDiv5">
+                    <div class="diceDiv5Top">
+                        <div class="diceDot"> </div>
+                        <div class="diceDot"> </div>
+                    </div>
+                    <div class="diceDiv5Middle">
+                        <div class="diceDot"> </div>
+                    </div>
+                    <div class="diceDiv5Bottom">
+                        <div class="diceDot"> </div>
+                        <div class="diceDot"> </div>
+                    </div>
+                </div>
+                <div id="diceDiv6">
+                    <div class="diceDiv6Left">
+                        <div class="diceDot"> </div>
+                        <div class="diceDot"> </div>
+                        <div class="diceDot"> </div>
+                    </div>
+                    <div class="diceDiv6Right">
+                        <div class="diceDot"> </div>
+                        <div class="diceDot"> </div>
+                        <div class="diceDot"> </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="imgsClickControl">
+            <div class="imgsClickDiv">
+                <div class="imgsClick" id="imgsClick1">
+                    <img src="resources/img/click1.jpg" alt="" >
+                </div>
+                <div class="imgsClick"  id="imgsClick2">
+                    <img src="resources/img/click2.jpg" alt="">
+                </div>
+                <div class="imgsClick" id="imgsClick3">
+                    <img src="resources/img/click3.jpg" alt="" >
+                </div>
+                <div class="imgsClick" id="imgsClick4">
+                    <img src="resources/img/click4.jpg" alt="" >
+                </div>
+                <div class="imgsClick" id="imgsClick5">
+                    <img src="resources/img/click5.jpg" alt="" >
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+    <footer>
+
+    </footer>
+</div>
+
+</body>
+<script>
+
+</script>
+</html>
