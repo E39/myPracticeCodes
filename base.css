@@ -1,0 +1,41 @@
+*{
+    padding:0;
+    margin:0;
+    border:0;
+}
+div{
+    width:100%;
+    height:100%;
+}
+a{
+    text-decoration: none;
+}
+li{
+    list-style-type: none;
+}
+body,html{
+    width:100%;
+    height:100%;
+}
+
+.main{
+    height:80%
+}
+header{
+
+    height:100px;
+    background-image:url(resources/img/top.jpg);
+    background-position:bottom right;
+}
+.codes{
+    -position: relative;
+    display:flex;
+    height:100%;
+}
+footer{
+    height:100px;
+    position:absolute;
+    width :100%;
+    bottom:0;
+    z-index:1;
+}
